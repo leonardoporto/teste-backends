@@ -1,0 +1,23 @@
+package cmd
+
+import "testing"
+
+func TestParser(t *testing.T) {
+	tests := []struct {
+		name string
+		in   string
+		out  int
+	}{
+		{"Parser / invalid path", "/teste.txt", 0},
+		{"Parser / valid path", "../../test/input/input000.txt", 20},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := parser(tt.in)
+			if len(result) != tt.out {
+				t.Errorf("failed %q, expected %d and result %d", tt.name, tt.out, len(result))
+			}
+		})
+	}
+}
