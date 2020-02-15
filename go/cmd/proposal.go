@@ -1,8 +1,9 @@
 package cmd
 
-import "strconv"
-
-import "time"
+import (
+	"strconv"
+	"time"
+)
 
 type (
 	Proposal struct {
@@ -75,8 +76,8 @@ func (p *Proposal) update(data []string, date time.Time) {
 	if p.LastUpdate.After(date) {
 		return
 	}
-	value, _ := strconv.ParseFloat(data[5], 64)
-	numberOfMonthly, _ := strconv.ParseInt(data[6], 10, 64)
+	value, _ := strconv.ParseFloat(data[0], 64)
+	numberOfMonthly, _ := strconv.ParseInt(data[1], 10, 64)
 	p.LoanValue = value
 	p.NumberOfMothlyInstallments = numberOfMonthly
 }

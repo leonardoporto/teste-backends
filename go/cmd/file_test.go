@@ -30,6 +30,7 @@ func TestConvert(t *testing.T) {
 	}{
 		{"Convert", parser("../../test/input/input001.txt"), 4},
 		{"Convert", parser("../../test/input/input004.txt"), 6},
+		{"Convert", parser("../input999.txt"), 1},
 	}
 
 	for _, tt := range tests {

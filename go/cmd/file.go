@@ -66,8 +66,8 @@ func convert2Proposal(lines []string) (proposals map[string]Proposal) {
 		case "proposal.created":
 			proposals[ID] = create(ID, data[5:], date)
 		case "proposal.updated":
-			proposal.update(data[:5], date)
-		case "proposal.deleted":
+			proposal.update(data[5:], date)
+		case "proposal.removed":
 			proposal.delete(date)
 		case "warranty.added":
 			w := createWarranty(data[:5], date)
