@@ -1,0 +1,39 @@
+{
+  "proposal": {
+  "loan": {
+    "min": 30000.0,
+    "max": 3000000.0
+  },
+  "duration" : {
+    "min": 2,
+    "max": 15
+  }
+},
+  "proponent": {
+    "min" : 2,
+    "main": 1,
+    "minAge": 18,
+    "income": [
+      {
+        "min": 18,
+        "max": 24,
+        "mod": 4.0
+      },
+      {
+        "min": 24,
+        "max": 50,
+        "mod": 3.0
+      },
+      {
+        "min": 50,
+        "max": 150,
+        "mod": 2.0
+      }
+    ]
+  },
+  "warranty": {
+    "min": 1,
+    "refuseProvince": ["PR", "SC", "RS"],
+    "valueMin": 2.0
+  }
+}
