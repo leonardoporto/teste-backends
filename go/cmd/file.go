@@ -57,7 +57,6 @@ func convert2Proposal(lines []string) (proposals map[string]Proposal) {
 		// ignoramos este fato somente quando a ação for de criar
 		proposal, exists := proposals[ID]
 		if !exists && action != "proposal.created" {
-			fmt.Printf("Proposal not exists - action %q", action)
 			continue
 		}
 
@@ -70,7 +69,7 @@ func convert2Proposal(lines []string) (proposals map[string]Proposal) {
 		case "proposal.removed":
 			proposal.delete(date)
 		case "warranty.added":
-			w := createWarranty(data[:5], date)
+			w := createWarranty(data[5:], date)
 			proposal.warrantyAdd(w)
 		case "warranty.updated":
 			result := proposal.warrantyUpdate(data[5:], date)

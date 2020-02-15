@@ -1,7 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"go/cmd"
+	"os"
+)
 
 func main() {
-	fmt.Println("Inicio")
+
+	args := os.Args
+
+	path := args[1]
+
+	cmd.Execute(path)
 }
