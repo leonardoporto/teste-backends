@@ -4,8 +4,6 @@ import "testing"
 
 func TestCheckProposals(t *testing.T) {
 
-	r = LoadRules("../config/rules.json")
-
 	tests := []struct {
 		name string
 		in   string

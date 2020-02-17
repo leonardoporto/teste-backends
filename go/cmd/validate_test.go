@@ -6,7 +6,7 @@ import (
 
 func TestValidateProposal(t *testing.T) {
 
-	rules := LoadRules("../config/rules.json")
+	rules := LoadRules()
 
 	tests := []struct {
 		name string
@@ -29,7 +29,7 @@ func TestValidateProposal(t *testing.T) {
 }
 
 func TestValidateWarranty(t *testing.T) {
-	rules := LoadRules("../config/rules.json")
+	rules := LoadRules()
 
 	warranties := []Warranty{
 		Warranty{Province: "SC", Value: 90000.00, Status: true},
@@ -62,7 +62,7 @@ func TestValidateWarranty(t *testing.T) {
 
 func TestValidateProponent(t *testing.T) {
 
-	rules := LoadRules("../config/rules.json")
+	rules := LoadRules()
 
 	proponents := []Proponent{
 		{Age: 16, MonthlyIncome: 10000.0, isMain: true, Status: true},  //0

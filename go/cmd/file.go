@@ -8,10 +8,12 @@ import (
 	"time"
 )
 
+// Event - Control events
 type Event struct {
 	ID string
 }
 
+// Read lines from file
 func parser(path string) (lines []string) {
 	file, err := os.Open(path)
 	defer file.Close()
@@ -38,29 +40,28 @@ func parser(path string) (lines []string) {
 	return
 }
 
+// Convert lines to Proposals / Warranties / Proponents
 func convert2Proposal(lines []string) (proposals map[string]Proposal) {
 	proposals = make(map[string]Proposal)
 	events := map[string]Event{}
 	for _, line := range lines {
 		data := strings.Split(line, ",")
-		// Em caso de eventos repetidos, considere o primeiro evento
+		// if repeated, consider the first event
 		_, exists := events[data[0]]
 		if exists {
 			continue
 		}
 		events[data[0]] = Event{data[0]}
 		action := strings.Join(data[1:3], ".")
-		// Em caso de eventos atrasados, considere sempre o evento mais novo
+		// if delayed events, consider the newest event
 		date, _ := time.Parse("2006-01-02T15:04:05.000Z", data[3])
 		ID := data[4]
-		// verificamos se a proposta ja existe.
-		// ignoramos este fato somente quando a ação for de criar
+		// check if the proposal exists
 		proposal, exists := proposals[ID]
 		if !exists && action != "proposal.created" {
 			continue
 		}
 
-		// realizamos a ação
 		switch action {
 		case "proposal.created":
 			proposals[ID] = create(ID, data[5:], date)
@@ -73,26 +74,26 @@ func convert2Proposal(lines []string) (proposals map[string]Proposal) {
 			proposal.warrantyAdd(w)
 		case "warranty.updated":
 			result := proposal.warrantyUpdate(data[5:], date)
-			if !result {
-				fmt.Printf("Warranty not exists - action %q", action)
+			if !result && os.Getenv("debug") == "1" {
+				fmt.Printf("Warranty not exists - action %q\n", action)
 			}
 		case "warranty.removed":
 			result := proposal.warrantyRemove(data[5], date)
-			if !result {
-				fmt.Printf("Warranty not exists - action %q", action)
+			if !result && os.Getenv("debug") == "1" {
+				fmt.Printf("Warranty not exists - action %q\n", action)
 			}
 		case "proponent.added":
 			p := createProponent(data[5:], date)
 			proposal.proponentAdd(p)
 		case "proponent.updated":
 			result := proposal.proponentUpdate(data[5:], date)
-			if !result {
-				fmt.Printf("Proponent not exists - action %q", action)
+			if !result && os.Getenv("debug") == "1" {
+				fmt.Printf("Proponent not exists - action %q\n", action)
 			}
 		case "proponent.removed":
 			result := proposal.proponentRemove(data[5], date)
-			if !result {
-				fmt.Printf("Proponent not exists - action %q", action)
+			if !result && os.Getenv("debug") == "1" {
+				fmt.Printf("Proponent not exists - action %q\n", action)
 			}
 		}
 

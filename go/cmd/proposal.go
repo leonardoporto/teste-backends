@@ -6,6 +6,7 @@ import (
 )
 
 type (
+	// Proposal - struct Proposal
 	Proposal struct {
 		ID                         string
 		LoanValue                  float64
@@ -15,7 +16,7 @@ type (
 		Proponents                 map[string]Proponent
 		Warranties                 map[string]Warranty
 	}
-
+	// Warranty - struct Warranty
 	Warranty struct {
 		ID         string
 		Value      float64
@@ -23,7 +24,7 @@ type (
 		Status     bool
 		LastUpdate time.Time
 	}
-
+	// Proponent - struct Proponent
 	Proponent struct {
 		ID            string
 		Name          string

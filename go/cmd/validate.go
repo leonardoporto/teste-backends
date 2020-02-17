@@ -1,18 +1,19 @@
 package cmd
 
 import (
-	"encoding/json"
-	"fmt"
 	"os"
+	"strconv"
+	"strings"
 )
 
 type (
+	// Rules Base Business Rule
 	Rules struct {
 		Proposal  ProposalRule  `json:"proposal"`
 		Proponent ProponentRule `json:"proponent"`
 		Warranty  WarrantyRule  `json:"warranty"`
 	}
-
+	// ProposalRule Business Rule Proposal
 	ProposalRule struct {
 		Loan struct {
 			Min float64 `json:"min"`
@@ -23,33 +24,106 @@ type (
 			Max int64 `json:"max"`
 		} `json:"duration"`
 	}
-
+	// ProponentRule Business Rule Proponent
 	ProponentRule struct {
-		Min    int   `json:"min"`
-		Main   int64 `json:"main"`
-		MinAge int64 `json:"minAge"`
-		Income []struct {
-			Min int64   `json:"min"`
-			Max int64   `json:"max"`
-			Mod float64 `json:"mod"`
-		} `json:"income"`
+		Min    int      `json:"min"`
+		Main   int64    `json:"main"`
+		MinAge int64    `json:"minAge"`
+		Income []Income `json:"income"`
 	}
-
+	// WarrantyRule Business Rule Warranty
 	WarrantyRule struct {
 		Min            int      `json:"min"`
 		RefuseProvince []string `json:"refuseProvince"`
 		ValueMin       float64  `json:"valueMin"`
 	}
+	// Income - Income data
+	Income struct {
+		Min int64   `json:"min"`
+		Max int64   `json:"max"`
+		Mod float64 `json:"mod"`
+	}
 )
 
-func LoadRules(path string) (rules Rules) {
-	file, err := os.Open(path)
-	defer file.Close()
+// LoadRules - responsible for loading the business rules
+func LoadRules() (rules Rules) {
+	proposalLoanMin, err := strconv.ParseFloat(os.Getenv("proposalLoanMin"), 64)
 	if err != nil {
-		fmt.Println("Rules not found")
+		proposalLoanMin = 30000.0
 	}
-	data := json.NewDecoder(file)
-	data.Decode(&rules)
+	rules.Proposal.Loan.Min = proposalLoanMin
+
+	proposalLoanMax, err := strconv.ParseFloat(os.Getenv("proposalLoanMax"), 64)
+	if err != nil {
+		proposalLoanMax = 3000000.0
+	}
+	rules.Proposal.Loan.Max = proposalLoanMax
+
+	proposalDurationMin, err := strconv.ParseInt(os.Getenv("proposalDurationMin"), 10, 64)
+	if err != nil {
+		proposalDurationMin = 2
+	}
+	rules.Proposal.Duration.Min = proposalDurationMin
+
+	proposalDurationMax, err := strconv.ParseInt(os.Getenv("proposalDurationMax"), 10, 64)
+	if err != nil {
+		proposalDurationMax = 15
+	}
+	rules.Proposal.Duration.Max = proposalDurationMax
+
+	warrantyMin, err := strconv.Atoi(os.Getenv("warrantyMin"))
+	if err != nil {
+		warrantyMin = 1
+	}
+	rules.Warranty.Min = warrantyMin
+
+	warrantyValueMin, err := strconv.ParseFloat(os.Getenv("warrantyValueMin"), 64)
+	if err != nil {
+		warrantyValueMin = 2.0
+	}
+	rules.Warranty.ValueMin = warrantyValueMin
+
+	warrantyRefuseProvince := os.Getenv("warrantyRefuseProvince")
+	if warrantyRefuseProvince == "" {
+		warrantyRefuseProvince = "PR,SC,RS"
+	}
+	rules.Warranty.RefuseProvince = strings.Split(warrantyRefuseProvince, ",")
+
+	proponentMin, err := strconv.Atoi(os.Getenv("proponentMin"))
+	if err != nil {
+		proponentMin = 2
+	}
+	rules.Proponent.Min = proponentMin
+
+	proponentMain, err := strconv.ParseInt(os.Getenv("proponentMain"), 10, 64)
+	if err != nil {
+		proponentMain = 1
+	}
+	rules.Proponent.Main = proponentMain
+
+	proponentMinAge, err := strconv.ParseInt(os.Getenv("proponentMinAge"), 10, 64)
+	if err != nil {
+		proponentMinAge = 18
+	}
+	rules.Proponent.MinAge = proponentMinAge
+
+	proponentIncome1824, err := strconv.ParseFloat(os.Getenv("proponentIncome1824"), 64)
+	if err != nil {
+		proponentIncome1824 = 4.0
+	}
+	proponentIncome2450, err := strconv.ParseFloat(os.Getenv("proponentIncome2450"), 64)
+	if err != nil {
+		proponentIncome2450 = 3.0
+	}
+	proponentIncome50, err := strconv.ParseFloat(os.Getenv("proponentIncome50"), 64)
+	if err != nil {
+		proponentIncome50 = 2.0
+	}
+
+	rules.Proponent.Income = append(rules.Proponent.Income, Income{18, 24, proponentIncome1824})
+	rules.Proponent.Income = append(rules.Proponent.Income, Income{24, 50, proponentIncome2450})
+	rules.Proponent.Income = append(rules.Proponent.Income, Income{50, 150, proponentIncome50})
+
 	return
 }
 
