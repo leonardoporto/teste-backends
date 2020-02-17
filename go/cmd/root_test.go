@@ -4,12 +4,23 @@ import "testing"
 
 func TestCheckProposals(t *testing.T) {
 
+	r = LoadRules("../config/rules.json")
+
 	tests := []struct {
 		name string
 		in   string
 		out  int
 	}{
-		{"001", "../../test/input/input000.txt", 3},
+		// {"000", "../../test/input/input000.txt", 3},
+		// {"001", "../../test/input/input001.txt", 3},
+		// {"002", "../../test/input/input002.txt", 3},
+		// {"003", "../../test/input/input003.txt", 3},
+		// {"004", "../../test/input/input004.txt", 2},
+		// {"005", "../../test/input/input005.txt", 3},
+		// {"006", "../../test/input/input006.txt", 3},
+		// {"007", "../../test/input/input007.txt", 3},
+		// {"008", "../../test/input/input008.txt", 3},
+		{"009", "../../test/input/input009.txt", 1},
 	}
 
 	for _, tt := range tests {
@@ -21,8 +32,8 @@ func TestCheckProposals(t *testing.T) {
 			// inicia validacao
 			result := check(proposals)
 
-			if len(result) == tt.out {
-				t.Errorf("Error")
+			if len(result) != tt.out {
+				t.Errorf("failed %q", tt.name)
 			}
 		})
 	}

@@ -42,8 +42,8 @@ type (
 	}
 )
 
-func loadRules() (rules Rules) {
-	file, err := os.Open("../config/rules.json")
+func LoadRules(path string) (rules Rules) {
+	file, err := os.Open(path)
 	defer file.Close()
 	if err != nil {
 		fmt.Println("Rules not found")
@@ -60,7 +60,7 @@ func (pr *ProposalRule) validate(proposal Proposal) bool {
 	}
 	// O empréstimo deve ser pago em no mínimo 2 anos e no máximo 15 anos
 	years := proposal.NumberOfMothlyInstallments / 12
-	if !(years > pr.Duration.Min && years < pr.Duration.Max) {
+	if !(years >= pr.Duration.Min && years <= pr.Duration.Max) {
 		return false
 	}
 	return true

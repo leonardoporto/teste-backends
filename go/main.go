@@ -8,8 +8,10 @@ import (
 func main() {
 
 	args := os.Args
-
 	path := args[1]
 
-	cmd.Execute(path)
+	//load rules
+	rules := cmd.LoadRules("config/rules.json")
+
+	cmd.Execute(path, rules)
 }

@@ -5,7 +5,11 @@ import (
 	"strings"
 )
 
-func Execute(path string) {
+var r Rules
+
+func Execute(path string, rules Rules) {
+
+	r = rules
 	// damos load no arquivo
 	lines := parser(path)
 	// convertemos linhas em propostas
@@ -16,13 +20,13 @@ func Execute(path string) {
 }
 
 func check(proposals map[string]Proposal) (ids []string) {
-	//load rules
-	rules := loadRules()
+
 	for id, p := range proposals {
 		results := []bool{}
-		results = append(results, rules.Proposal.validate(p))
-		results = append(results, rules.Warranty.validate(p))
-		results = append(results, rules.Proponent.validate(p))
+		results = append(results, r.Proposal.validate(p))
+		results = append(results, r.Warranty.validate(p))
+		results = append(results, r.Proponent.validate(p))
+		fmt.Println(p.ID)
 		fmt.Println(results)
 		if validate(results) {
 			ids = append(ids, id)
