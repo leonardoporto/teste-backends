@@ -1,6 +1,10 @@
 defmodule App.Proponent do
   defstruct id: nil, proposal_id: nil, name: nil, age: nil, monthly_income: nil, is_main: false
 
+  def is_valid?(proponent, installment) do
+    check_min_age(proponent) and check_income(proponent, installment)
+  end
+
   def check_min_age(proponent) do
     proponent.age >= 18
   end
