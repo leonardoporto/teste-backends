@@ -12,23 +12,33 @@ defmodule App.Proposal do
   end
 
   def has_min_proponents?(%App.Proposal{proponents: proponents} = proposal) when is_list(proponents) do
-    qtd_active = Enum.filter(proponents, &(App.Proponent.is_valid?(&1, installment_caculate(proposal)))) |> Enum.count
+    qtd_active = proponents
+      |> Enum.filter(&(App.Proponent.is_valid?(&1, installment_caculate(proposal))))
+      |> Enum.count
     qtd_active >= 2
   end
 
-  def has_unique_main_proponent(%App.Proposal{proponents: proponents} = proposal) when is_list(proponents) do
-    qtd_main_proponent = Enum.filter(proponents, &(App.Proponent.is_valid?(&1, installment_caculate(proposal))))
-     |> Enum.filter(&(&1.is_main))
-     |> Enum.count
+  def has_unique_main_proponent?(%App.Proposal{proponents: proponents} = proposal) when is_list(proponents) do
+    qtd_main_proponent = proponents
+      |> Enum.filter(&(App.Proponent.is_valid?(&1, installment_caculate(proposal))))
+      |> Enum.filter(&(&1.is_main))
+      |> Enum.count
     qtd_main_proponent == 1
   end
 
   def has_min_warranties?(%App.Proposal{warranties: warranties}) when is_list(warranties) do
-    false
+    qtd = warranties
+      |> Enum.filter(&(App.Warranty.is_valid(&1)))
+      |> Enum.count
+    qtd >=1
   end
 
-  def is_valid_value_warranties?(%App.Proposal{warranties: warranties}) when is_list(warranties) do
-    false
+  def is_valid_value_warranties?(%App.Proposal{warranties: warranties} = proposal) when is_list(warranties) do
+    warranty_total = warranties
+      |> Enum.filter(&(App.Warranty.is_valid(&1)))
+      |> Enum.map(&(&1.value))
+      |> Enum.sum
+    warranty_total >= proposal.loan_value
   end
 
   defp installment_caculate(%App.Proposal{loan_value: value, number_of_monthly_installments: months}) do
