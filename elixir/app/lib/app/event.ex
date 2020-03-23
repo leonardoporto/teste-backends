@@ -7,21 +7,23 @@ defmodule App.Event do
       |> String.split(",")
       |> Enum.split(4)
 
+    {:ok, datetime, _} = DateTime.from_iso8601(date)
+
     %App.Event{
         id: id,
         type: type,
         action: action,
-        date: date,
+        date: datetime,
         data: data
       }
   end
 
-  def parser_data(%App.Event{data: data}) when length(data) == 1 do
+  def parser_data(%App.Event{data: data}) when length(data) == 1 do # remove proposal
     [id] = data
     id
   end
 
-  def parser_data(%App.Event{data: data}) when length(data) == 2 do
+  def parser_data(%App.Event{data: data}) when length(data) == 2 do # remove from proposal
     [id_proposal, id] = data
     %{
       id_proposal: id_proposal,
@@ -29,12 +31,21 @@ defmodule App.Event do
     }
   end
 
-  def parser_data(%App.Event{data: data}) when length(data) == 3 do
+  def parser_data(%App.Event{data: data, action: action}) when length(data) == 3 and action == "created" do # create and update proposal
     [id, loan_value, number_of_monthly_installments] = data
     %App.Proposal{
       id: id,
-      loan_value: loan_value,
-      number_of_monthly_installments: number_of_monthly_installments
+      loan_value: String.to_float(loan_value),
+      number_of_monthly_installments: String.to_integer(number_of_monthly_installments)
+    }
+  end
+
+  def parser_data(%App.Event{data: data, action: action}) when length(data) == 3 and action == "updated"  do # create and update proposal
+    [id, loan_value, number_of_monthly_installments] = data
+    %{
+      id: id,
+      loan_value: String.to_float(loan_value),
+      number_of_monthly_installments: String.to_integer(number_of_monthly_installments)
     }
   end
 
@@ -43,7 +54,7 @@ defmodule App.Event do
     %App.Warranty{
       proposal_id: proposal_id,
       id: id,
-      value: value,
+      value: String.to_float(value),
       province: province
     }
   end
@@ -54,9 +65,9 @@ defmodule App.Event do
       proposal_id: proposal_id,
       id: id,
       name: name,
-      age: age,
-      monthly_income: monthly_income,
-      is_main: is_main
+      age: String.to_integer(age),
+      monthly_income: String.to_float(monthly_income),
+      is_main: String.to_existing_atom(is_main)
     }
   end
 
