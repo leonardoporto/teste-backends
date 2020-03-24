@@ -1,7 +1,9 @@
-defmodule App.Event.Test do
+defmodule Analyzer.Event.Test do
   use ExUnit.Case, async: true
 
-  test "should create a new event" do
+  alias Analyzer.Event
+
+  test "should receive a new event" do
     tests = [
       %{
         line: "7898ce65-bc90-47fb-8784-a3cd43a0e283,proponent,added,2019-11-11T14:28:01Z,50cedd7f-44fd-4651-a4ec-f55c742e3477,de92d973-15b4-4d69-98e4-c2d93eb590e6,Minh Batz,53,226014.83,true",
@@ -17,11 +19,11 @@ defmodule App.Event.Test do
       }
     ]
     Enum.each(tests, fn test ->
-      event = App.Event.new(test.line)
+      event = Event.receive(test.line)
       assert event.id == test.result
     end)
   end
-
+  # @tag :only
   test "should parser data event" do
     tests = [
       %{
@@ -62,15 +64,14 @@ defmodule App.Event.Test do
       }
     ]
     Enum.each(tests, fn test ->
-      event = App.Event.new(test.line)
-      data = App.Event.parser_data(event)
+      event = Analyzer.Event.receive(test.line)
       cond do
-        event.type == "proposal" and (event.action == "created" or event.action == "updated") -> assert data.id == test.result
-        event.type == "proposal" and (event.action == "deleted") -> assert data == test.result
-        event.type == "warranty" and (event.action == "added" or event.action == "updated") -> assert data.id == test.result
-        event.type == "warranty" and (event.action == "deleted") -> assert data.id == test.result
-        event.type == "proponent" and (event.action == "added" or event.action == "updated") -> assert data.id == test.result
-        event.type == "proponent" and (event.action == "deleted") -> assert data.id == test.result
+        event.type == "proposal" and (event.action == "created" or event.action == "updated") -> assert event.data.id == test.result
+        event.type == "proposal" and (event.action == "deleted") -> assert event.data == test.result
+        event.type == "warranty" and (event.action == "added" or event.action == "updated") -> assert event.data.id == test.result
+        event.type == "warranty" and (event.action == "deleted") -> assert event.data.id == test.result
+        event.type == "proponent" and (event.action == "added" or event.action == "updated") -> assert event.data.id == test.result
+        event.type == "proponent" and (event.action == "deleted") -> assert event.data.id == test.result
       end
     end)
   end
