@@ -2,14 +2,10 @@ defmodule Analyzer.Proposal do
   @moduledoc """
    Responsible for proposal control
   """
-  defstruct id: nil, loan_value: nil, number_of_monthly_installments: nil, warranties: [], proponents: []
+  defstruct id: nil, loan_value: nil, number_of_monthly_installments: nil, warranties: %{}, proponents: %{}
 
   alias Analyzer.Proponent
   alias Analyzer.Warranty
-
-  def make_proposal(proposal, event) do
-    [proposal, event]
-  end
 
   def is_valid_loan_value?(%{loan_value: value}) when is_float(value) do
     30_000.00 <= value and value <= 3_000_000.00
