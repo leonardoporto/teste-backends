@@ -4,7 +4,7 @@ defmodule Analyzer.File do
   """
   def read_file(path) do
     path
-    |> File.read!
+    |> File.read!()
     |> String.split("\n", trim: true)
   end
 end

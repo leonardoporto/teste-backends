@@ -24,4 +24,5 @@ defmodule Analyzer.Proponent do
     end
   end
 end
+
 L

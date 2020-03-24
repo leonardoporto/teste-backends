@@ -8,8 +8,7 @@ defmodule Analyzer.Warranty do
     is_valid_province?(warranty)
   end
 
-  def is_valid_province?(%{province: province})  do
+  def is_valid_province?(%{province: province}) do
     !Enum.member?(["RS", "SC", "PR"], province)
   end
-
 end

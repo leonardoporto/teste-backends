@@ -6,19 +6,17 @@ defmodule Analyzer.Aggregator do
   def make_proposals(events) do
     events
     |> Enum.filter(&(&1.type == "proposal"))
-    |> Enum.reduce(%{}, fn(event, proposals) ->
+    |> Enum.reduce(%{}, fn event, proposals ->
       make_proposal(proposals, event)
     end)
-    |> Enum.map(fn({id, proposal}) ->
+    |> Enum.map(fn {id, proposal} ->
       Map.new([{id, mount_proposal(proposal, get_events_from_proposal(id, events))}])
     end)
   end
 
   def mount_proposal(proposal, events_proposal) do
-    IO.inspect proposal
     events_proposal
-    |> Enum.reduce(proposal, fn (event, new_proposal) ->
-      IO.inspect new_proposal
+    |> Enum.reduce(proposal, fn event, new_proposal ->
       attach(new_proposal, event)
     end)
   end
@@ -29,7 +27,8 @@ defmodule Analyzer.Aggregator do
     |> Enum.filter(&(&1.data.proposal_id == proposal_id))
   end
 
-  defp make_proposal(proposals, %{action: action} = event) when action in ["created", "updated"] do
+  defp make_proposal(proposals, %{action: action} = event)
+       when action in ["created", "updated"] do
     Map.put(proposals, event.data.id, event.data)
   end
 
@@ -52,5 +51,4 @@ defmodule Analyzer.Aggregator do
   defp attach(proposal, %{type: "proponent", action: "removed"} = event) do
     Map.put(proposal, :proponents, Map.delete(proposal.proponents, event.data.id))
   end
-
 end

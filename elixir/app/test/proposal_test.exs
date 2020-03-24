@@ -19,20 +19,20 @@ defmodule Analyzer.Proposal.Test do
     %Warranty{id: 13, proposal_id: 3, value: 26_362.96, province: "PE"},
     %Warranty{id: 14, proposal_id: 4, value: 126_362.96, province: "PR"},
     %Warranty{id: 15, proposal_id: 4, value: 60_362.96, province: "SP"},
-    %Warranty{id: 16, proposal_id: 4, value: 60_362.96, province: "RO"},
+    %Warranty{id: 16, proposal_id: 4, value: 60_362.96, province: "RO"}
   ]
-
 
   test "should verify loan value" do
     tests = [
-      %{proposal: %Proposal{loan_value: 10_000.00}, result:  false},
-      %{proposal: %Proposal{loan_value: 29_999.99}, result:  false},
-      %{proposal: %Proposal{loan_value: 30_000.00}, result:  true},
-      %{proposal: %Proposal{loan_value: 45_000.00}, result:  true},
-      %{proposal: %Proposal{loan_value: 3_000_000.00}, result:  true},
-      %{proposal: %Proposal{loan_value: 3_000_000.01}, result:  false},
-      %{proposal: %Proposal{loan_value: 4_000_230.00}, result:  false}
+      %{proposal: %Proposal{loan_value: 10_000.00}, result: false},
+      %{proposal: %Proposal{loan_value: 29_999.99}, result: false},
+      %{proposal: %Proposal{loan_value: 30_000.00}, result: true},
+      %{proposal: %Proposal{loan_value: 45_000.00}, result: true},
+      %{proposal: %Proposal{loan_value: 3_000_000.00}, result: true},
+      %{proposal: %Proposal{loan_value: 3_000_000.01}, result: false},
+      %{proposal: %Proposal{loan_value: 4_000_230.00}, result: false}
     ]
+
     Enum.each(tests, fn test ->
       assert Proposal.is_valid_loan_value?(test.proposal) == test.result
     end)
@@ -46,6 +46,7 @@ defmodule Analyzer.Proposal.Test do
       %{proposal: %Proposal{number_of_monthly_installments: 180}, result: true},
       %{proposal: %Proposal{number_of_monthly_installments: 181}, result: false}
     ]
+
     Enum.each(tests, fn test ->
       assert Proposal.is_valid_payment_time?(test.proposal) == test.result
     end)
@@ -98,5 +99,4 @@ defmodule Analyzer.Proposal.Test do
   #     assert Proposal.is_valid_value_warranties?(test.proposal) == test.result
   #   end)
   # end
-
 end

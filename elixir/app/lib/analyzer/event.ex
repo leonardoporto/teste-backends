@@ -9,28 +9,33 @@ defmodule Analyzer.Event do
   alias Analyzer.Warranty
 
   def receive(line) do
-
-    {[id, type, action, date], data} = line
+    {[id, type, action, date], data} =
+      line
       |> String.split(",")
       |> Enum.split(4)
 
     {:ok, datetime, _} = DateTime.from_iso8601(date)
 
     %{
-        id: id,
-        type: type,
-        action: action,
-        date: datetime,
-        data: process_data(data)
-      }
+      id: id,
+      type: type,
+      action: action,
+      date: datetime,
+      data: process_data(data)
+    }
   end
 
-  def process_data([id | tail]) when tail == [], do: id # remove proposal
+  # remove proposal
+  def process_data([id | tail]) when tail == [], do: id
 
-  def process_data([id_proposal, id | tail]) when tail == [], do: %{id_proposal: id_proposal, id: id} # remove from proposal
+  # remove from proposal
+  def process_data([id_proposal, id | tail]) when tail == [],
+    do: %{id_proposal: id_proposal, id: id}
 
-  def process_data(data) when length(data) == 3 do # create and update proposal
+  # create and update proposal
+  def process_data(data) when length(data) == 3 do
     [id, loan_value, number_of_monthly_installments] = data
+
     %Proposal{
       id: id,
       loan_value: String.to_float(loan_value),
@@ -38,8 +43,10 @@ defmodule Analyzer.Event do
     }
   end
 
-  def process_data(data) when length(data) == 4 do # create and update warranty
+  # create and update warranty
+  def process_data(data) when length(data) == 4 do
     [proposal_id, id, value, province] = data
+
     %Warranty{
       proposal_id: proposal_id,
       id: id,
@@ -48,8 +55,10 @@ defmodule Analyzer.Event do
     }
   end
 
-  def process_data(data) when length(data) == 6 do # create and update proponent
+  # create and update proponent
+  def process_data(data) when length(data) == 6 do
     [proposal_id, id, name, age, monthly_income, is_main] = data
+
     %Proponent{
       proposal_id: proposal_id,
       id: id,
@@ -59,5 +68,4 @@ defmodule Analyzer.Event do
       is_main: String.to_existing_atom(is_main)
     }
   end
-
 end
