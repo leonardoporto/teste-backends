@@ -25,9 +25,9 @@ defmodule Analyzer.Event do
       }
   end
 
-  def process_data([id | tail]) when Enum.empty?(tail), do: id # remove proposal
+  def process_data([id | tail]) when tail == [], do: id # remove proposal
 
-  def process_data([id_proposal, id | tail]) when Enum.empty?(tail), do: %{id_proposal: id_proposal, id: id} # remove from proposal
+  def process_data([id_proposal, id | tail]) when tail == [], do: %{id_proposal: id_proposal, id: id} # remove from proposal
 
   def process_data(data) when length(data) == 3 do # create and update proposal
     [id, loan_value, number_of_monthly_installments] = data

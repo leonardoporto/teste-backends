@@ -37,7 +37,7 @@ defmodule Analyzer.Proposal do
 
   def has_min_warranties?(%{warranties: warranties}) when is_list(warranties) do
     qtd = warranties
-      |> Enum.filter(&(Warranty.is_valid(&1)))
+      |> Enum.filter(&(Warranty.is_valid?(&1)))
       |> Enum.count
     qtd >= 1
   end
