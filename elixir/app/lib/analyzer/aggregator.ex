@@ -2,7 +2,6 @@ defmodule Analyzer.Aggregator do
   @moduledoc """
   Responsible for grouping the information
   """
-
   def make_proposals(events) do
     events
     |> Enum.filter(&(&1.type == "proposal"))
@@ -10,21 +9,9 @@ defmodule Analyzer.Aggregator do
       make_proposal(proposals, event)
     end)
     |> Enum.map(fn {id, proposal} ->
-      Map.new([{id, mount_proposal(proposal, get_events_from_proposal(id, events))}])
+      {id, mount_proposal(proposal, get_events_from_proposal(id, events))}
     end)
-  end
-
-  def mount_proposal(proposal, events_proposal) do
-    events_proposal
-    |> Enum.reduce(proposal, fn event, new_proposal ->
-      attach(new_proposal, event)
-    end)
-  end
-
-  defp get_events_from_proposal(proposal_id, events) do
-    events
-    |> Enum.filter(&(&1.type in ["warranty", "proponent"]))
-    |> Enum.filter(&(&1.data.proposal_id == proposal_id))
+    |> Enum.into(%{})
   end
 
   defp make_proposal(proposals, %{action: action} = event)
@@ -34,6 +21,19 @@ defmodule Analyzer.Aggregator do
 
   defp make_proposal(proposals, %{action: "removed"} = event) do
     Map.delete(proposals, event.data)
+  end
+
+  defp get_events_from_proposal(proposal_id, events) do
+    events
+    |> Enum.filter(&(&1.type in ["warranty", "proponent"]))
+    |> Enum.filter(&(&1.data.proposal_id == proposal_id))
+  end
+
+  defp mount_proposal(proposal, events_proposal) do
+    events_proposal
+    |> Enum.reduce(proposal, fn event, new_proposal ->
+      attach(new_proposal, event)
+    end)
   end
 
   defp attach(proposal, %{type: "warranty"} = event) do

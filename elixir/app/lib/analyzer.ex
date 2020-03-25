@@ -5,6 +5,7 @@ defmodule Analyzer do
   alias Analyzer.File
   alias Analyzer.Event
   alias Analyzer.Aggregator
+  alias Analyzer.Proposal
 
   def start() do
     start("files/input999.txt")
@@ -19,5 +20,14 @@ defmodule Analyzer do
   defp process(events) do
     events
     |> Aggregator.make_proposals()
+    |> Enum.map(&Proposal.is_valid?(&1))
+    |> Enum.map(&extract(&1))
+    |> result()
+    |> IO.puts()
   end
+
+  defp extract({:is_valid, id}), do: id
+  defp extract({:is_invalid}), do: false
+
+  defp result(ids), do: ids |> Enum.filter(& &1) |> Enum.join(",")
 end

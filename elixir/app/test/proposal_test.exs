@@ -52,51 +52,111 @@ defmodule Analyzer.Proposal.Test do
     end)
   end
 
-  # test "should check if the proposal has the minimum number of proponents" do
-  #   tests = [
-  #     %{proposal: %Proposal{id: 99, loan_value: 45_000.00, number_of_monthly_installments: 24, proponents: Enum.filter(@proponents, &(&1.proposal_id == 99))}, result: false},
-  #     %{proposal: %Proposal{id: 1, loan_value: 45_000.00, number_of_monthly_installments: 48, proponents: Enum.filter(@proponents, &(&1.proposal_id == 1)) }, result: false},
-  #     %{proposal: %Proposal{id: 1, loan_value: 30_000.00, number_of_monthly_installments: 48, proponents: Enum.filter(@proponents, &(&1.proposal_id == 1)) }, result: true},
-  #     %{proposal: %Proposal{id: 2, loan_value: 78_000.00, number_of_monthly_installments: 180, proponents: Enum.filter(@proponents, &(&1.proposal_id == 2)) }, result: true},
-  #     %{proposal: %Proposal{id: 2, loan_value: 45_000.00, number_of_monthly_installments: 48, proponents: Enum.filter(@proponents, &(&1.proposal_id == 2)) }, result: true}
-  #   ]
-  #   Enum.each(tests, fn test ->
-  #     assert Proposal.has_min_proponents?(test.proposal) == test.result
-  #   end)
-  # end
+  test "should check if the proposal has the minimum number of proponents" do
+    tests = [
+      %{
+        proposal: %Proposal{id: 99, loan_value: 45_000.00, number_of_monthly_installments: 24},
+        result: false
+      },
+      %{
+        proposal: %Proposal{id: 1, loan_value: 45_000.00, number_of_monthly_installments: 48},
+        result: false
+      },
+      %{
+        proposal: %Proposal{id: 1, loan_value: 30_000.00, number_of_monthly_installments: 48},
+        result: true
+      },
+      %{
+        proposal: %Proposal{id: 2, loan_value: 78_000.00, number_of_monthly_installments: 180},
+        result: true
+      },
+      %{
+        proposal: %Proposal{id: 2, loan_value: 45_000.00, number_of_monthly_installments: 48},
+        result: true
+      }
+    ]
 
-  # test "should check if the proposal has only one main proponent" do
-  #   tests = [
-  #     %{proposal: %Proposal{id: 99, loan_value: 45_000.00, number_of_monthly_installments: 24, proponents: Enum.filter(@proponents, &(&1.proposal_id == 99))}, result: false},
-  #     %{proposal: %Proposal{id: 1, loan_value: 30_000.00, number_of_monthly_installments: 48, proponents: Enum.filter(@proponents, &(&1.proposal_id == 1)) }, result: true},
-  #     %{proposal: %Proposal{id: 2, loan_value: 45_000.00, number_of_monthly_installments: 48, proponents: Enum.filter(@proponents, &(&1.proposal_id == 2)) }, result: false}
-  #   ]
-  #   Enum.each(tests, fn test ->
-  #     assert Proposal.has_unique_main_proponent?(test.proposal) == test.result
-  #   end)
-  # end
+    Enum.each(tests, fn test ->
+      %{proposal: proposal, result: result} = test
 
-  # test "should check if the proposal has the minimum number of warranties" do
-  #   tests = [
-  #     %{proposal: %Proposal{id: 1, loan_value: 30_000.00, warranties: Enum.filter(@warranties, &(&1.proposal_id == 1))}, result: true},
-  #     %{proposal: %Proposal{id: 1, loan_value: 45_000.00, warranties: Enum.filter(@warranties, &(&1.proposal_id == 2))}, result: false},
-  #     %{proposal: %Proposal{id: 1, loan_value: 100_000.00, warranties: Enum.filter(@warranties, &(&1.proposal_id == 3))}, result: true},
-  #     %{proposal: %Proposal{id: 1, loan_value: 60_000.00, warranties: Enum.filter(@warranties, &(&1.proposal_id == 4))}, result: true}
-  #   ]
-  #   Enum.each(tests, fn test ->
-  #     assert Proposal.has_min_warranties?(test.proposal) == test.result
-  #   end)
-  # end
+      proponents =
+        @proponents |> Enum.filter(&(&1.proposal_id == test.proposal.id)) |> make_data()
 
-  # test "should checks if the sum of the warranties is valid" do
-  #   tests = [
-  #     %{proposal: %Proposal{id: 1, loan_value: 30_000.00, warranties: Enum.filter(@warranties, &(&1.proposal_id == 1))}, result: true},
-  #     %{proposal: %Proposal{id: 1, loan_value: 45_000.00, warranties: Enum.filter(@warranties, &(&1.proposal_id == 2))}, result: false},
-  #     %{proposal: %Proposal{id: 1, loan_value: 100_000.00, warranties: Enum.filter(@warranties, &(&1.proposal_id == 3))}, result: true},
-  #     %{proposal: %Proposal{id: 1, loan_value: 160_000.00, warranties: Enum.filter(@warranties, &(&1.proposal_id == 4))}, result: false}
-  #   ]
-  #   Enum.each(tests, fn test ->
-  #     assert Proposal.is_valid_value_warranties?(test.proposal) == test.result
-  #   end)
-  # end
+      proposal = Map.put(proposal, :proponents, proponents)
+      assert Proposal.has_min_proponents?(proposal) == result
+    end)
+  end
+
+  test "should check if the proposal has only one main proponent" do
+    tests = [
+      %{
+        proposal: %Proposal{id: 99, loan_value: 45_000.00, number_of_monthly_installments: 24},
+        result: false
+      },
+      %{
+        proposal: %Proposal{id: 1, loan_value: 30_000.00, number_of_monthly_installments: 48},
+        result: true
+      },
+      %{
+        proposal: %Proposal{id: 2, loan_value: 45_000.00, number_of_monthly_installments: 48},
+        result: false
+      }
+    ]
+
+    Enum.each(tests, fn test ->
+      %{proposal: proposal, result: result} = test
+
+      proponents =
+        @proponents |> Enum.filter(&(&1.proposal_id == test.proposal.id)) |> make_data()
+
+      proposal = Map.put(proposal, :proponents, proponents)
+      assert Proposal.has_unique_main_proponent?(proposal) == result
+    end)
+  end
+
+  test "should check if the proposal has the minimum number of warranties" do
+    tests = [
+      %{proposal: %Proposal{id: 1, loan_value: 30_000.00}, result: true},
+      %{proposal: %Proposal{id: 2, loan_value: 45_000.00}, result: false},
+      %{proposal: %Proposal{id: 3, loan_value: 100_000.00}, result: true},
+      %{proposal: %Proposal{id: 4, loan_value: 60_000.00}, result: true}
+    ]
+
+    Enum.each(tests, fn test ->
+      %{proposal: proposal, result: result} = test
+
+      warranties =
+        @warranties |> Enum.filter(&(&1.proposal_id == test.proposal.id)) |> make_data()
+
+      proposal = Map.put(proposal, :warranties, warranties)
+      assert Proposal.has_min_warranties?(proposal) == result
+    end)
+  end
+
+  test "should checks if the sum of the warranties is valid" do
+    tests = [
+      %{proposal: %Proposal{id: 1, loan_value: 30_000.00}, result: true},
+      %{proposal: %Proposal{id: 2, loan_value: 45_000.00}, result: false},
+      %{proposal: %Proposal{id: 3, loan_value: 100_000.00}, result: false},
+      %{proposal: %Proposal{id: 4, loan_value: 160_000.00}, result: false},
+      %{proposal: %Proposal{id: 4, loan_value: 60_000.00}, result: true}
+    ]
+
+    Enum.each(tests, fn test ->
+      %{proposal: proposal, result: result} = test
+
+      warranties =
+        @warranties |> Enum.filter(&(&1.proposal_id == test.proposal.id)) |> make_data()
+
+      proposal = Map.put(proposal, :warranties, warranties)
+      assert Proposal.is_valid_value_warranties?(proposal) == result
+    end)
+  end
+
+  def make_data(items) do
+    items
+    |> Enum.reduce(%{}, fn item, map ->
+      Map.put(map, item.id, item)
+    end)
+  end
 end
