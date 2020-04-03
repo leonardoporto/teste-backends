@@ -1,0 +1,19 @@
+version: "3.7"
+services:
+  analyzer:
+    build: .
+    command: ["/analyzer/bin/analyzer", "start", "analyzer@NB145"]
+    networks:
+      - analyzer-network
+  file_collector:
+    build: .
+    command: ["/file_collector/bin/file_collector", "start", "file_collector@NB145"]
+    volumes:
+      - ./files/input:/files/input
+      - ./files/output:/files/output
+    networks:
+      - analyzer-network
+
+networks:
+  analyzer-network:
+    driver: bridge
